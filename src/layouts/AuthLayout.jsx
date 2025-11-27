@@ -8,14 +8,18 @@ const AuthLayout = () => {
     return (
         <div className='max-w-7xl mx-auto'>
             <Logo></Logo>
-            <div className='flex'>
-                <div className='flex-1 justify-center items-center'>
+
+
+            <div className='flex justify-between items-center '>
+                <div className='flex-1'>
                     <Outlet></Outlet>
                 </div>
-                <div className='flex-1 justify-center items-center'>
-                    <img src={authimage} alt="" />
+                <div className='bg-[#fafdf0] flex-1 -mt-12 h-[900px]'>
+                    <img src={authimage} className='mt-48' alt="" />
                 </div>
             </div>
+
+
         </div>
     );
 };
