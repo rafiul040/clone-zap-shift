@@ -1,5 +1,4 @@
-// import React, { startTransition } from 'react';
-// import Swiper from 'swiper';
+
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import amazon from '../../assets/brands/amazon.png'
@@ -18,9 +17,9 @@ const Brands = () => {
     return (
 
 
-        <div className='my-20'>
+        <div className='my-20 w-7xl'>
 
-<h2 className='text-secondary my-15 text-2xl font-bold text-center'>We've helped thousands of sales teams</h2>
+<h2 className='text-secondary my-15 text-2xl font-bold mb-20 text-center'>We've helped thousands of sales teams</h2>
         <Swiper
         slidesPerView={4}
         centeredSlides={true}
@@ -42,7 +41,7 @@ const Brands = () => {
                 )
             }
         </Swiper>
-        <div className='border-b-2 mt-20 border-dashed border-gray-400'></div>
+        
             </div>
     );
 };

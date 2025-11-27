@@ -8,7 +8,8 @@ import tinydelivery from '../../../assets/tiny-deliveryman.png'
 const ChooseUs = () => {
     return (
         <div class="max-w-7xl mx-auto px-6 py-12 space-y-8">
-
+<div className='border-b-2 mb-25 border-dashed border-gray-400'></div>
+            
   
   <div class="flex flex-col md:flex-row items-center bg-white shadow-sm rounded-xl p-8 gap-6">
     <img src={liveTracking} alt="Live Tracking Illustration" class="w-36 h-auto"/>

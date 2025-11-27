@@ -4,8 +4,8 @@ import mercahant from "../../../assets/be-a-merchant-bg.png"
 
 const Satisfaction = () => {
     return (
-        <div class="max-w-7xl mx-auto px-6 mt-16">
-            <div className='border-t-2 border-dashed pt-20 border-gray-500'></div>
+        <div class="max-w-7xl mx-auto px-6 mt-15">
+            <div className='border-t-2 border-dashed pt-20 mb-8 border-gray-500'></div>
   <div class="relative bg-[#003a3a] text-white rounded-3xl p-10 overflow-hidden">
 
     

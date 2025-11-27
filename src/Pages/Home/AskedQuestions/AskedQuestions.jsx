@@ -8,7 +8,9 @@ const AskedQuestions = () => {
   };
 
   return (
-    <div className=" py-16 px-6">
+    <div className=" py-20 px-6">
+        {/* <div className='border-b-2 mt-20 border-dashed border-gray-400'></div> */}
+            {/* </div> */}
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-[#0b3c3b]">
           Frequently Asked Question (FAQ)
