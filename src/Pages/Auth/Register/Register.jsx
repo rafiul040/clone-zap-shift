@@ -1,54 +1,118 @@
 // React import — কারণ কম্পোনেন্ট বানাতে React লাগে
-import React from 'react';
+import React from "react";
 
 // useForm import — react-hook-form লাইব্রেরি থেকে আসছে, form তৈরি, validation ও data হ্যান্ডেল করতে
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 
 // useAuth import — custom hook, যেটা তোমার auth logic (registerUser) দিচ্ছে
-import useAuth from '../../../Hooks/useAuth';
-import { Link } from 'react-router';
+import useAuth from "../../../Hooks/useAuth";
+import { Link, useLocation, useNavigate } from "react-router";
+import axios from "axios";
 
 const Register = () => {
-
   // useForm থেকে register (input control), handleSubmit (submit handler wrapper), errors (validation errors) নেওয়া হচ্ছে
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
-  
   // useAuth থেকে registerUser ফাংশন নেওয়া—custom authentication system
-  const {registerUser} = useAuth()
+  const { registerUser, updateUserProfile } = useAuth();
+  const location = useLocation()
+  const navigate = useNavigate()
+  console.log('in register')
 
   // form submit হলে data পাওয়া যাবে
   // এখানে লগ করা হচ্ছে, তারপর registerUser দিয়ে Firebase/Auth signup করা হচ্ছে
   const handleRegisration = (data) => {
-    console.log("After Registration", data);
+    console.log("After Registration", data.photo[0]);
+    const profileImg = data.photo[0]
 
     // registerUser(email, password) — backend/auth service এ new user তৈরি
     registerUser(data.email, data.password)
-    .then(res => {
-      // সফল হলে নতুন user কে console এ দেখানো
-      console.log(res.user)
-    })
-    .catch(error => {
-      // ভুল হলে error লগ করা
-      console.log(error)
-    })
+      .then((res) => {
+        // সফল হলে নতুন user কে console এ দেখানো
+        console.log(res.user);
+
+
+      const formData = new FormData()
+      formData.append('image', profileImg)
+
+      const imageApiURL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`
+      axios.post(imageApiURL, formData) 
+
+      .then(res => {
+        console.log('after image upload', res.data.data.url)
+
+        const userProfile = {
+          displayName: data.name,
+          photoURL : res.data.data.url,
+
+        }
+        updateUserProfile(userProfile)
+        .then(() => {
+          console.log('user Profile updated done')
+          navigate(location.state || '/')
+        })
+        .catch(error => {
+          console.log(error)
+        })
+        
+      })
+
+
+      })
+      .catch((error) => {
+        // ভুল হলে error লগ করা
+        console.log(error);
+      });
   };
 
   return (
     <div className="max-w-sm mx-auto w-full">
-
       <h3 className="text-3xl text-center">WelCome to Zap Shift</h3>
-          <p className='text-center'>Please Register !</p>
+      <p className="text-center">Please Register !</p>
       {/* handleSubmit — react-hook-form এর wrapper, submit হলে validation check করবে */}
-      <form className='card-body shadow-2xl' onSubmit={handleSubmit(handleRegisration)}>
-
+      <form
+        className="card-body shadow-2xl"
+        onSubmit={handleSubmit(handleRegisration)}
+      >
         <fieldset className="fieldset">
+          {/* Name label */}
+          <label className="label">Name</label>
 
-          {/* Email label */}
+          {/* Email input — register দিয়ে form state এর সাথে connect করে দিচ্ছি 
+              required: true মানে validation এ email না দিলে error */}
+          <input
+            type="text"
+            {...register("name", { required: true })}
+            className="input"
+            placeholder="Your Name"
+          />
+
+          {/* যদি email required rule ভাঙে — তাহলে এই error message দেখাবে */}
+          {errors.name?.type === "required" && (
+            <p className="text-red-500">Name is Required</p>
+          )}
+
+          {/* image field */}
+          <label className="label">Photo</label>
+          {/* <input type="file" className="file-input" /> */}
+          {/* Email input — register দিয়ে form state এর সাথে connect করে দিচ্ছি 
+              required: true মানে validation এ email না দিলে error */}
+          <input
+            type="file"
+            {...register("photo", { required: true })}
+            className="file-input"
+            placeholder="Your Photo"
+          />
+
+          {/* যদি email required rule ভাঙে — তাহলে এই error message দেখাবে */}
+          {errors.photo?.type === "required" && (
+            <p className="text-red-500">Photo is Required</p>
+          )}
+
           <label className="label">Email</label>
 
           {/* Email input — register দিয়ে form state এর সাথে connect করে দিচ্ছি 
@@ -78,7 +142,7 @@ const Register = () => {
             {...register("password", {
               required: true,
               minLength: 6,
-              pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/
+              pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
             })}
             className="input"
             placeholder="Password"
@@ -91,7 +155,9 @@ const Register = () => {
 
           {/* password এর minLength rule error */}
           {errors.password?.type === "minLength" && (
-            <p className="text-red-500">Password Must be 6 character or longer</p>
+            <p className="text-red-500">
+              Password Must be 6 character or longer
+            </p>
           )}
 
           {/* password এর pattern rule error */}
@@ -108,9 +174,13 @@ const Register = () => {
 
           {/* Submit button — form submit করবে */}
           <button className="btn btn-neutral mt-4">Register</button>
-
         </fieldset>
-         <p>Already have an account! to Zap shift <Link className='underline text-blue-400' to='/login'>Login</Link> </p>
+        <p>
+          Already have an account! to Zap shift{" "}
+          <Link state={location.state} className="underline text-blue-400" to="/login">
+            Login
+          </Link>{" "}
+        </p>
       </form>
     </div>
   );
