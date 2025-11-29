@@ -1,6 +1,9 @@
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useLoaderData } from "react-router";
+import Swal from "sweetalert2";
+import useAxiosInstance from "../../Hooks/useAxiosInstance";
+import useAuth from './../../Hooks/useAuth';
 
 const SendParcel = () => {
 
@@ -8,9 +11,12 @@ const SendParcel = () => {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    // formState: { errors },
   } = useForm();
-console.log(errors)
+
+  const { user } = useAuth()
+
+  const axiosSecure = useAxiosInstance()
 
   const serviceCenters = useLoaderData();
   const regionsDuplicate = serviceCenters.map(c => c.region);
@@ -29,6 +35,66 @@ console.log(errors)
 
 
   const handleSendParcel = (data) => {
+    const isDocument = data.parcelType === 'document';
+    const isSameDistrict = data.senderDistrict === data.receiverDistrict;
+    const parcelWeight = parseFloat(data.parcelWeight)
+
+    let cost = 0;
+    if(isDocument){
+      cost = isSameDistrict ? 60 : 80;
+    }
+    else{
+      if(parcelWeight < 3){
+        cost = isSameDistrict ? 110 : 150
+      }
+      else{
+        const minCharge = isSameDistrict ? 110 : 150;
+        const extraWeight = parcelWeight - 3
+        const extraCharge = isSameDistrict ? extraWeight * 40 : extraWeight * 40 + 40;
+        cost = minCharge + extraCharge
+      }
+    }
+
+
+    console.log('cost', cost)
+
+Swal.fire({
+  title: "Agree with the cost?",
+  text: `You will be charged ${cost} taka!`,
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "I Agree !"
+}).then((result) => {
+  if (result.isConfirmed) {
+
+
+    axiosSecure.post('/parcels', data)
+    .then(res => {
+      console.log("after saving parcel", res.data);
+    })
+
+
+    // Swal.fire({
+    //   title: "Deleted!",
+    //   text: "Your file has been deleted.",
+    //   icon: "success"
+    // });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
     console.log(data);
   };
 
@@ -93,14 +159,16 @@ console.log(errors)
               type="text"
               {...register("senderName")}
               className="input w-full"
+              defaultValue={user?.displayName}
               placeholder="Sender Name"
             />
-            <label className="label mt-4">Sender Address</label>
+            <label className="label mt-4">Sender Email</label>
             <input
-              type="text"
-              {...register("senderAddress")}
+              type="email"
+              {...register("senderEmail")}
+              defaultValue={user?.email}
               className="input w-full"
-              placeholder="Sender Address"
+              placeholder="Sender Email"
             />
             <label className="label mt-4">Sender Phone No</label>
             <input
@@ -142,13 +210,6 @@ console.log(errors)
               className="input w-full"
               placeholder="Receiver Address"
             />
-
-
-
-
-
-
-
             
           </fieldset>
 
