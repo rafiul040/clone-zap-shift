@@ -3,10 +3,9 @@ import { useForm, useWatch } from "react-hook-form";
 import { useLoaderData } from "react-router";
 import Swal from "sweetalert2";
 import useAxiosInstance from "../../Hooks/useAxiosInstance";
-import useAuth from './../../Hooks/useAuth';
+import useAuth from "./../../Hooks/useAuth";
 
 const SendParcel = () => {
-
   const {
     register,
     handleSubmit,
@@ -14,86 +13,67 @@ const SendParcel = () => {
     // formState: { errors },
   } = useForm();
 
-  const { user } = useAuth()
+  const { user } = useAuth();
 
-  const axiosSecure = useAxiosInstance()
+  const axiosSecure = useAxiosInstance();
 
   const serviceCenters = useLoaderData();
-  const regionsDuplicate = serviceCenters.map(c => c.region);
+  const regionsDuplicate = serviceCenters.map((c) => c.region);
   const regions = [...new Set(regionsDuplicate)];
-  const senderRegion = useWatch({control, name: 'senderRegion'});
-  const receiverRegion = useWatch({control, name: 'receiverRegion'})
+  const senderRegion = useWatch({ control, name: "senderRegion" });
+  const receiverRegion = useWatch({ control, name: "receiverRegion" });
 
-
-  const districtsByRegion = region => {
-    const regionDistricts = serviceCenters.filter(c => c.region === region);
-    const districts = regionDistricts.map(d => d.district)
-    return districts
-  }
-
-
-
+  const districtsByRegion = (region) => {
+    const regionDistricts = serviceCenters.filter((c) => c.region === region);
+    const districts = regionDistricts.map((d) => d.district);
+    return districts;
+  };
 
   const handleSendParcel = (data) => {
-    const isDocument = data.parcelType === 'document';
+    const isDocument = data.parcelType === "document";
     const isSameDistrict = data.senderDistrict === data.receiverDistrict;
-    const parcelWeight = parseFloat(data.parcelWeight)
+    const parcelWeight = parseFloat(data.parcelWeight);
 
     let cost = 0;
-    if(isDocument){
+    if (isDocument) {
       cost = isSameDistrict ? 60 : 80;
-    }
-    else{
-      if(parcelWeight < 3){
-        cost = isSameDistrict ? 110 : 150
-      }
-      else{
+    } else {
+      if (parcelWeight < 3) {
+        cost = isSameDistrict ? 110 : 150;
+      } else {
         const minCharge = isSameDistrict ? 110 : 150;
-        const extraWeight = parcelWeight - 3
-        const extraCharge = isSameDistrict ? extraWeight * 40 : extraWeight * 40 + 40;
-        cost = minCharge + extraCharge
+        const extraWeight = parcelWeight - 3;
+        const extraCharge = isSameDistrict
+          ? extraWeight * 40
+          : extraWeight * 40 + 40;
+        cost = minCharge + extraCharge;
       }
     }
 
+    console.log("cost", cost);
+    data.cost = cost;
 
-    console.log('cost', cost)
+    Swal.fire({
+      title: "Agree with the cost?",
+      text: `You will be charged ${cost} taka!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "I Agree !",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure.post("/parcels", data).then((res) => {
+          console.log("after saving parcel", res.data);
+        });
 
-Swal.fire({
-  title: "Agree with the cost?",
-  text: `You will be charged ${cost} taka!`,
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "I Agree !"
-}).then((result) => {
-  if (result.isConfirmed) {
-
-
-    axiosSecure.post('/parcels', data)
-    .then(res => {
-      console.log("after saving parcel", res.data);
-    })
-
-
-    // Swal.fire({
-    //   title: "Deleted!",
-    //   text: "Your file has been deleted.",
-    //   icon: "success"
-    // });
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
+        // Swal.fire({
+        //   title: "Deleted!",
+        //   text: "Your file has been deleted.",
+        //   icon: "success"
+        // });
+      }
+    });
 
     console.log(data);
   };
@@ -178,39 +158,44 @@ Swal.fire({
               placeholder="Sender Phone No"
             />
 
-
-
-<fieldset className="fieldset mt-5">
+            <fieldset className="fieldset mt-5">
               <legend className="fieldset-legend my-1">Sender Regions</legend>
-              <select {...register('senderRegion')} defaultValue="Select a region" className="select w-full">
+              <select
+                {...register("senderRegion")}
+                defaultValue="Select a region"
+                className="select w-full"
+              >
                 <option disabled={true}>Select a region</option>
-                {
-                    regions.map((r, i) => <option key={i}>{r}</option>)
-                }
+                {regions.map((r, i) => (
+                  <option key={i}>{r}</option>
+                ))}
               </select>
             </fieldset>
 
-
-
-<fieldset className="fieldset mt-5">
+            <fieldset className="fieldset mt-5">
               <legend className="fieldset-legend my-1">Sender Districts</legend>
-              <select {...register('senderDistrict')} placeholder="" defaultValue="Select Districts" className="select w-full">
+              <select
+                {...register("senderDistrict")}
+                placeholder=""
+                defaultValue="Select Districts"
+                className="select w-full"
+              >
                 <option disabled={true}>Select Districts</option>
-                {
-                    districtsByRegion(senderRegion).map((r, i) => <option value={r} key={i}>{r}</option>)
-                }
+                {districtsByRegion(senderRegion).map((r, i) => (
+                  <option value={r} key={i}>
+                    {r}
+                  </option>
+                ))}
               </select>
             </fieldset>
 
-
- <label className="label mt-4">Receiver Address</label>
+            <label className="label mt-4">Sender Address</label>
             <input
               type="text"
               {...register("receiverAddress")}
               className="input w-full"
               placeholder="Receiver Address"
             />
-            
           </fieldset>
 
           <fieldset className="fieldset">
@@ -230,8 +215,7 @@ Swal.fire({
               placeholder="Receiver Email"
             />
 
-
- <label className="label mt-4">Receiver Phone No</label>
+            <label className="label mt-4">Receiver Phone No</label>
             <input
               type="text"
               {...register("receiverPhone")}
@@ -239,34 +223,37 @@ Swal.fire({
               placeholder="Receiver Phone No"
             />
 
-
-<fieldset className="fieldset mt-5">
+            <fieldset className="fieldset mt-5">
               <legend className="fieldset-legend my-1">Receiver Regions</legend>
-              <select {...register('receiverRegion')} defaultValue="Select a region" className="select w-full">
+              <select
+                {...register("receiverRegion")}
+                defaultValue="Select a region"
+                className="select w-full"
+              >
                 <option disabled={true}>Select a region</option>
-                {
-                    regions.map((r, i) => <option key={i}>{r}</option>)
-                }
+                {regions.map((r, i) => (
+                  <option key={i}>{r}</option>
+                ))}
               </select>
             </fieldset>
 
-
-
-<fieldset className="fieldset mt-5">
-              <legend className="fieldset-legend my-1">Receiver District</legend>
-              <select {...register('receiverDistrict')} defaultValue="Select a District" className="select w-full">
+            <fieldset className="fieldset mt-5">
+              <legend className="fieldset-legend my-1">
+                Receiver District
+              </legend>
+              <select
+                {...register("receiverDistrict")}
+                defaultValue="Select a District"
+                className="select w-full"
+              >
                 <option disabled={true}>Select a District</option>
-                {
-                    districtsByRegion(receiverRegion).map((r, i) => <option value={r} key={i}>{r}</option>)
-                }
+                {districtsByRegion(receiverRegion).map((r, i) => (
+                  <option value={r} key={i}>
+                    {r}
+                  </option>
+                ))}
               </select>
             </fieldset>
-
-
-
-
-
-
 
             <label className="label mt-4">Receiver Address</label>
             <input
@@ -275,22 +262,6 @@ Swal.fire({
               className="input w-full"
               placeholder="Receiver Address"
             />
-           
-
-            {/* <fieldset className="fieldset mt-5">
-              <legend className="fieldset-legend my-1">Receiver Regions</legend>
-              <select defaultValue="Select Receiver region" className="select w-full">
-                <option disabled={true}>Select Receiver region</option>
-                {
-                    regions.map((r, i) => <option key={i}>{r}</option>)
-                }
-              </select>
-              <span className="label">Optional</span>
-            </fieldset> */}
-
-
-            
-              
           </fieldset>
         </div>
         <div className="my-5 mx-2">
