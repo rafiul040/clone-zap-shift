@@ -17,17 +17,17 @@ const Navbar = () => {
   }
 
     const links = <>
-    <li><NavLink to="/services">Services</NavLink></li>
-    <li><NavLink to="/coverage">Coverage</NavLink></li>
-    <li><NavLink to="/aboutus">About Us</NavLink></li>
-    <li><NavLink to="/send-parcel">Send Parcel</NavLink></li>
-    <li><NavLink to="">Be a Rider</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="/services">Services</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="/coverage">Coverage</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="/aboutus">About Us</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="/send-parcel">Send Parcel</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="">Be a Rider</NavLink></li>
 
 
 
   {
     user && <>
-    <li><NavLink to="/dashboard/my-parcels">My Parcels</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="/dashboard/my-parcels">My Parcels</NavLink></li>
     </>
   }
 
@@ -35,7 +35,7 @@ const Navbar = () => {
 
     </>
     return (
-        <div className="navbar mb-10 rounded-lg bg-base-100 shadow-sm">
+        <div className="navbar mb-10 rounded-lg bg-base-100">
   <div className="navbar-start">
     <div className="dropdown">
       <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -59,7 +59,7 @@ const Navbar = () => {
   <div className="navbar-end">
       {
         user ? <a onClick={handleLogout} className="btn">Log Out</a>
-        : <Link to='/login' className='btn'>Login</Link>
+        : <Link to='/login' className='btn hover:bg-primary'>Login</Link>
       }
       <Link to='/rider' className='btn text-black mx-4 btn-primary'>Be a Rider</Link>
   </div>
