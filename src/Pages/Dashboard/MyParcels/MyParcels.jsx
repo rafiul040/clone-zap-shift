@@ -5,7 +5,6 @@ import useAxiosInstance from "../../../Hooks/useAxiosInstance";
 import { FiEdit } from "react-icons/fi";
 import { FaMagnifyingGlass, FaTrashCan } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import { Link } from "react-router";
 
 const MyParcels = () => {
   const { user } = useAuth();
@@ -46,6 +45,22 @@ const MyParcels = () => {
     });
   };
 
+
+
+
+
+
+  const handlePayment = async (parcel) => {
+    const paymentInfo = {
+      cost: parcel.cost,
+      parcelId: parcel._id,
+      senderEmail: parcel.senderEmail,
+      parcelName: parcel.parcelName
+    }
+    const res = await axiosSecure.post('/payment-checkout-session', paymentInfo)
+    window.location?.assign(res.data.url)
+  }
+
   return (
     <div>
       <h2>All Of My Parcels : {parcels.length}</h2>
@@ -77,9 +92,9 @@ const MyParcels = () => {
                   parcel.paymentStatus === 'paid' ? 
                   <span className="text-green-400">Paid</span>
                   :
-                  <Link to={`/dashboard/payment/${parcel._id}`}>
-                  <button className="btn text-black btn-sm btn-primary">Pay</button>
-                  </Link>
+                
+                  <button onClick={() => handlePayment(parcel)} className="btn text-black btn-sm btn-primary">Pay</button>
+                
                   }</td>
                 <td>{parcel.deliveryStatus}</td>
                 <td className="gap-2 flex">
