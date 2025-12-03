@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useParams } from 'react-router';
-import useAxiosInstance from '../../../Hooks/useAxiosInstance';
+import useAxiosInstance from '../../../hooks/useAxiosInstance';
 
 const Payment = () => {
     const {parcelId} = useParams()
