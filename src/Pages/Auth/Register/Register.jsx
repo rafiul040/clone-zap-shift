@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import useAuth from "../../../Hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router";
 import axios from "axios";
+import useAxiosInstance from "../../../Hooks/useAxiosInstance";
 
 const Register = () => {
   // useForm থেকে register (input control), handleSubmit (submit handler wrapper), errors (validation errors) নেওয়া হচ্ছে
@@ -21,8 +22,7 @@ const Register = () => {
   const { registerUser, updateUserProfile } = useAuth();
   const location = useLocation()
   const navigate = useNavigate()
-  console.log('in register')
-
+  const axiosSecure = useAxiosInstance()
   // form submit হলে data পাওয়া যাবে
   // এখানে লগ করা হচ্ছে, তারপর registerUser দিয়ে Firebase/Auth signup করা হচ্ছে
   const handleRegisration = (data) => {
@@ -31,9 +31,8 @@ const Register = () => {
 
     // registerUser(email, password) — backend/auth service এ new user তৈরি
     registerUser(data.email, data.password)
-      .then((res) => {
+      .then(() => {
         // সফল হলে নতুন user কে console এ দেখানো
-        console.log(res.user);
 
 
       const formData = new FormData()
@@ -43,11 +42,24 @@ const Register = () => {
       axios.post(imageApiURL, formData) 
 
       .then(res => {
-        console.log('after image upload', res.data.data.url)
+        const photoURL= res.data.data.url
+
+        const userInfo = {
+          email: data.email,
+          displayName: data.name,
+          photoURL : photoURL,
+        }
+        axiosSecure.post('/users', userInfo)
+        .then(res => {
+          if(res.data.insertedId){
+            console.log('user created in the database')
+          }
+        })
+
 
         const userProfile = {
           displayName: data.name,
-          photoURL : res.data.data.url,
+          photoURL : photoURL,
 
         }
         updateUserProfile(userProfile)

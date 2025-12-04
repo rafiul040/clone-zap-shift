@@ -21,7 +21,7 @@ const Navbar = () => {
     <li><NavLink className='font-semibold hover:text-secondary' to="/coverage">Coverage</NavLink></li>
     <li><NavLink className='font-semibold hover:text-secondary' to="/aboutus">About Us</NavLink></li>
     <li><NavLink className='font-semibold hover:text-secondary' to="/send-parcel">Send Parcel</NavLink></li>
-    <li><NavLink className='font-semibold hover:text-secondary' to="">Be a Rider</NavLink></li>
+    <li><NavLink className='font-semibold hover:text-secondary' to="/rider">Be a Rider</NavLink></li>
 
 
 
@@ -47,9 +47,9 @@ const Navbar = () => {
         {links}
       </ul>
     </div>
-    <a className="btn btn-ghost text-xl">
+    <span className="btn btn-ghost text-xl">
       <Logo></Logo>
-      </a>
+      </span>
   </div>
   <div className="navbar-center hidden lg:flex">
     <ul className="menu menu-horizontal px-1">
