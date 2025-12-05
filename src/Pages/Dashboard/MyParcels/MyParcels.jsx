@@ -5,7 +5,7 @@ import { FaMagnifyingGlass, FaTrashCan } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import { Link } from "react-router";
 import useAuth from "../../../Hooks/useAuth";
-import useAxiosInstance from "../../../hooks/useAxiosInstance";
+import useAxiosInstance from "../../../Hooks/useAxiosInstance";
 
 const MyParcels = () => {
   const { user } = useAuth();
@@ -67,6 +67,28 @@ const MyParcels = () => {
   };
 
   return (
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <div>
       <h2>All of my parcels : {parcels.length}</h2>
       <div className="overflow-x-auto">
@@ -78,6 +100,7 @@ const MyParcels = () => {
               <th>Name</th>
               <th>Cost</th>
               <th>Payment</th>
+              <th>Parcel Status</th>
               <th>Delivery Status</th>
               <th>Actions</th>
             </tr>
@@ -100,7 +123,8 @@ const MyParcels = () => {
                     </button>
                   )}
                 </td>
-                <td></td>
+                <td>{parcel.trackingId}</td>
+                <td>{parcel.deliveryStatus}</td>
                 <td>
                   <button className="btn btn-square hover:bg-primary">
                     <FaMagnifyingGlass />

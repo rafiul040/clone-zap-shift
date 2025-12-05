@@ -1,24 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useState } from 'react';
 import useAxiosInstance from './../../../Hooks/useAxiosInstance';
 import { FaUserShield } from 'react-icons/fa';
 import { FiShieldOff } from 'react-icons/fi';
 import Swal from 'sweetalert2';
 
 const UsersManagement = () => {
-    const axiosSecure = useAxiosInstance()
+    const axiosSecure = useAxiosInstance();
+    const [searchText, setSearchText] = useState('');
+
+
+
+
     const {refetch , data: users = []} = useQuery({
-        queryKey: ['users'],
+        queryKey: ['users', searchText],
         queryFn: async() => {
-            const res = await axiosSecure.get(`/users`)
+            const res = await axiosSecure.get(`/users?searchText=${searchText}`)
             return res.data
         }
     })
 
 
-    const handleMakeUser = user => {
+    const handleMakeAdmin = user => {
       const roleInfo = {role: 'admin'}
-      axiosSecure.patch(`/users/${user._id}`, roleInfo)
+      axiosSecure.patch(`/users/${user._id}/role`, roleInfo)
       .then(res => {
         console.log(res.data)
         if(res.data.modifiedCount){
@@ -37,7 +42,7 @@ const UsersManagement = () => {
                 
                 const handleRemoveAdmin = user => {
                   const roleInfo = {role: 'user'}
-                  axiosSecure.patch(`/users/${user._id}`, roleInfo)
+                  axiosSecure.patch(`/users/${user._id}/role`, roleInfo)
                   .then(res => {
                     if(res.data.modifiedCount){
                       refetch()
@@ -57,6 +62,27 @@ const UsersManagement = () => {
         <div>
             <h2 className='text-4xl'>Users {users.length}</h2>
 
+
+<p>Search Text: {searchText}</p>
+<label className="input">
+  <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <g
+      strokeLinejoin="round"
+      strokeLinecap="round"
+      strokeWidth="2.5"
+      fill="none"
+      stroke="currentColor"
+    >
+      <circle cx="11" cy="11" r="8"></circle>
+      <path d="m21 21-4.3-4.3"></path>
+    </g>
+  </svg>
+  <input
+  onChange={(e) => setSearchText(e.target.value)} 
+  type="search" 
+  className="grow" 
+  placeholder="Search Users" />
+</label>
 
             <div className="overflow-x-auto">
   <table className="table">
@@ -106,7 +132,7 @@ No
             <button onClick={() => handleRemoveAdmin(user)} className='btn bg-red-500'>
             <FiShieldOff/>
           </button> : 
-          <button onClick={() => handleMakeUser(user)} className='btn bg-green-500'>
+          <button onClick={() => handleMakeAdmin(user)} className='btn bg-green-500'>
             <FaUserShield/>
           </button>
           }
