@@ -5,6 +5,7 @@ import { NavLink, Outlet } from 'react-router';
 import { Link } from 'react-router';
 import UseRole from '../Hooks/UseRole';
 import { RiEBikeFill } from 'react-icons/ri';
+import { FaTasks } from 'react-icons/fa';
 
 const DashboardLayout = () => {
   const {role} = UseRole()
@@ -53,6 +54,19 @@ const DashboardLayout = () => {
             <span className='is-drawer-close:hidden'>Payment History</span>
             </NavLink>
         </li>
+
+
+      {
+        role == "rider" && <>
+        <li>
+            <NavLink className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Assigned Deliveries" to="/dashboard/assigned-deliveries">
+            <FaTasks/>
+            <span className='is-drawer-close:hidden'>Assigned Deliveries</span>
+            </NavLink>
+        </li>
+        </>
+      }
+
 
       {
         role === 'admin' && <>
